@@ -1,5 +1,6 @@
 //webpack.config.js
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
 module.exports = {
@@ -34,7 +35,7 @@ module.exports = {
           {
             loader: "postcss-loader",
             options: {
-              plugins: function() {
+              plugins: function () {
                 return [
                   require("autoprefixer")({
                     overrideBrowserslist: [">0.25%", "not dead"]
@@ -72,6 +73,12 @@ module.exports = {
         collapseWhitespace: false //是否折叠空白
       }
       // hash: true //是否加上hash，默认是 false
+    }),
+    // 每次清空一下目录然后打包代码
+    // new CleanWebpackPlugin() 
+    // 配置不清空的目录
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['**/*', '!dll', '!dll/**'] //不删除dll目录下的文件
     })
   ]
 };
