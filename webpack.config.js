@@ -1,6 +1,7 @@
 //webpack.config.js
 "use strict"
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const isDev = process.env.NODE_ENV === "development";
@@ -16,7 +17,8 @@ module.exports = {
     stats: "errors-only", //终端仅打印 error
     overlay: false, //默认不启用
     clientLogLevel: "silent", //日志等级
-    compress: true //是否启用 gzip 压缩
+    compress: true, //是否启用 gzip 压缩
+    open: true //自动开启浏览器
   },
   entry: './src/index.js',
   output: {
@@ -46,6 +48,11 @@ module.exports = {
     // 配置不清空的目录
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ['**/*', '!dll', '!dll/**'] //不删除dll目录下的文件
+    }),
+    // 分离js中的css文件
+    new MiniCssExtractPlugin({
+      // 对输出的文件进行重命名
+      filename: 'css/built.css'
     })
   ],
   module: {
@@ -93,6 +100,17 @@ module.exports = {
           }
         ],
         exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: [
+          // 创建style标签，将样式放入
+          // 'style-loader',
+          // 这个loader取代style-loader。作用：提取css成单独文件
+          MiniCssExtractPlugin.loader,
+          // 将css文件整合到js文件中
+          'css-loader'
+        ]
       }
     ]
   }
